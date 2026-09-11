@@ -239,6 +239,8 @@ function App() {
         </div>
       </section>
 
+      <InstallationSection />
+
         {/* BEGIN: About Keymux Section */}
         <section className="py-16 md:py-24 bg-mistral-cream dark:bg-[#1a1a1c] border-b border-mistral-hairline-soft dark:border-mistral-ink-tint" id="about">
           <div className="max-w-[1280px] mx-auto px-8 xl:pr-72">
@@ -271,6 +273,135 @@ function App() {
                 </p>
               </div>
             </motion.div>
+
+            {/* Routing Logic Features */}
+            <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+              
+              {/* Auto Mode Card */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                className="p-8 md:p-10 rounded-2xl bg-white dark:bg-[#121212] border border-mistral-hairline-strong dark:border-mistral-ink-tint shadow-sm relative overflow-hidden group"
+              >
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-mistral-sunshine-500 to-mistral-primary opacity-80"></div>
+                
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-mistral-sunshine-300/20 dark:bg-mistral-sunshine-300/10 flex items-center justify-center text-mistral-primary">
+                    <ZapIcon size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas tracking-tight">Auto Mode</h3>
+                    <p className="text-xs font-mono font-medium text-mistral-primary tracking-wide uppercase mt-1">Smart TTFT & Dynamic Translation</p>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <span className="inline-block px-2.5 py-1 rounded bg-mistral-hairline-soft dark:bg-mistral-surface-code text-[11px] font-semibold text-mistral-slate dark:text-mistral-muted tracking-wide uppercase">
+                    Best for: High-availability workflows & autonomous agents
+                  </span>
+                </div>
+
+                <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-[1.6] mb-6">
+                  In Auto Mode, Keymux prioritizes <strong>Speed and Uptime</strong> over model strictness. The routing logic executes in four distinct phases:
+                </p>
+
+                <ol className="space-y-4 mb-8">
+                  <li className="flex gap-4">
+                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">1</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Health Verification</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Filters out any keys currently blocked by the Circuit Breaker (e.g., in a cooling period after hitting a 429 Rate Limit).</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">2</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">TTFT Baseline</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Analyzes the Exponential Moving Average (EMA) of the Time-To-First-Token latency across all healthy keys to identify the absolute fastest provider.</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">3</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Tolerance Banding</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Creates a dynamic +100ms window around the fastest baseline to establish a "Fast Pool" of elite providers.</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">4</span>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Utilization Tie-Breaker</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Selects the key from the Fast Pool that has the lowest API quota utilization (RPM / Limit).</p>
+                    </div>
+                  </li>
+                </ol>
+
+                <div className="p-5 rounded-lg bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint/50">
+                  <h4 className="text-[11px] font-mono font-bold text-mistral-ink dark:text-mistral-canvas uppercase tracking-widest mb-2">Dynamic Model Translation</h4>
+                  <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">
+                    If the selected provider differs from the requested model, Keymux transparently translates the payload to the optimal flagship model. For example, if OpenRouter is congested, Keymux seamlessly routes to Groq targeting <code className="font-mono text-[10px] bg-mistral-hairline-soft dark:bg-black/40 px-1 py-0.5 rounded text-mistral-primary">llama-3.1-70b-versatile</code>, preventing crashes.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Strict Mode Card */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                className="p-8 md:p-10 rounded-2xl bg-white dark:bg-[#121212] border border-mistral-hairline-strong dark:border-mistral-ink-tint shadow-sm relative overflow-hidden group flex flex-col"
+              >
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-mistral-steel to-mistral-slate opacity-80 dark:from-mistral-ink-tint dark:to-mistral-slate"></div>
+                
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-mistral-hairline-soft dark:bg-mistral-surface-code flex items-center justify-center text-mistral-slate dark:text-mistral-muted">
+                    <Shield01Icon size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas tracking-tight">Strict Mode</h3>
+                    <p className="text-xs font-mono font-medium text-mistral-slate dark:text-mistral-muted tracking-wide uppercase mt-1">Enforced Model Routing</p>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <span className="inline-block px-2.5 py-1 rounded bg-mistral-hairline-soft dark:bg-mistral-surface-code text-[11px] font-semibold text-mistral-slate dark:text-mistral-muted tracking-wide uppercase">
+                    Best for: Production, benchmarking & strict adherence
+                  </span>
+                </div>
+
+                <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-[1.6] mb-6">
+                  In Strict Mode, Keymux prioritizes <strong>Model Consistency</strong> over absolute uptime. The routing logic ensures precise capability matching:
+                </p>
+
+                <ul className="space-y-6 mb-8 flex-grow">
+                  <li className="flex gap-4">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-mistral-slate dark:bg-mistral-muted shrink-0"></div>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Isolated Pools</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">The router filters the healthy pool to only include keys explicitly supporting the requested model (e.g. strict Anthropic keys for <code className="font-mono text-[10px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1 py-0.5 rounded">claude-3-5-sonnet</code>).</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-mistral-slate dark:bg-mistral-muted shrink-0"></div>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Intra-Model Balancing</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Applies the same TTFT & Utilization load-balancing logic, but strictly contained within the keys designated for that exact model.</p>
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-500/80 shrink-0"></div>
+                    <div>
+                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Hard Fails</h4>
+                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">If all keys for the requested model are rate-limited or the API drops, Keymux gracefully returns a standard HTTP 429/500 error instead of silently switching to a different LLM family.</p>
+                    </div>
+                  </li>
+                </ul>
+              </motion.div>
+              
+            </div>
           </div>
         </section>
 
@@ -361,8 +492,6 @@ function App() {
             </motion.div>
           </div>
         </section>
-
-        <InstallationSection />
         
         {/* BEGIN: Contact Section */}
         <section className="py-16 md:py-24 bg-mistral-cream-soft dark:bg-[#1a1a1c] border-t border-mistral-hairline-soft dark:border-mistral-ink-tint" id="contact">

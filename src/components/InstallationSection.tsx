@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Copy01Icon, Tick01Icon } from 'hugeicons-react';
+import { Tick01Icon, Copy01Icon } from 'hugeicons-react';
+import { ShinyText } from "@/components/lightswind/shiny-text";
 import { motion } from 'framer-motion';
 
 interface CodeBlockProps {
@@ -97,7 +98,7 @@ export function InstallationSection() {
           By default, the Claude Code app asks you to log in with an Anthropic account and charges you per token. But using Keymux, you can reroute it to use Free APIs (like Google Gemini, Groq, or OpenRouter) completely transparently!
         </p>
         <p className="text-lg text-mistral-slate dark:text-mistral-muted leading-[1.50] mb-12">
-          This also works flawlessly as a drop-in proxy for popular code editor extensions like <strong className="font-medium text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
+          This also works flawlessly as a drop-in proxy for the <ShinyText speed={5} repeatDelay={4} baseColor="#94a3b8" shineColor="#fa520f" className="inline font-medium">Claude Code CLI, Claude Desktop, and Claude Code extension</ShinyText>, along with popular code editor extensions like <strong className="font-medium text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
         </p>
       </motion.div>
 
@@ -130,11 +131,31 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 1: Download & Build */}
+        {/* Step 1: Create API Keys */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 1: Download &amp; Build
+              Step 1: Get Your Free API Keys
+            </h3>
+          </div>
+          <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
+            Keymux supports the following free AI providers. Go ahead and generate an API key for your preferred service:
+          </p>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            {['Nvidia (nim.nvidia.com)', 'Groq (console.groq.com)', 'OpenRouter (openrouter.ai)', 'Google AI (aistudio.google.com)', 'Mistral (console.mistral.ai)'].map(provider => (
+              <li key={provider} className="flex items-center gap-3 text-sm text-mistral-slate dark:text-mistral-muted bg-mistral-cream-soft dark:bg-[#121214] px-4 py-2.5 rounded-lg border border-mistral-hairline dark:border-mistral-ink-tint/50">
+                <div className="w-1.5 h-1.5 rounded-full bg-mistral-primary shrink-0 shadow-[0_0_8px_rgba(250,82,15,0.6)]"></div>
+                <span className="truncate font-medium">{provider}</span>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+
+        {/* Step 2: Download & Build */}
+        <motion.div variants={itemVariants}>
+          <div className="flex items-baseline justify-between mb-3">
+            <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
+              Step 2: Download &amp; Build
             </h3>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
@@ -172,15 +193,15 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 2: Make it Global */}
+        {/* Step 3: Make it Global */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="text-base font-semibold text-mistral-canvas flex items-center gap-2">
-              Step 2: Make it Global 
+              Step 3: Make it Global 
             </h3>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            To avoid running <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">node dist/cli.js</code> every time, let's make it global so you can type <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">keymux</code> from anywhere in your system.
+            To avoid running <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">node dist/cli.js</code> every time, let's make it global so you can type <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">keymux</code> from anywhere in your system.
           </p>
           <CodeSnippet 
             rawText="npm link"
@@ -194,15 +215,15 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 3: Add API Keys */}
+        {/* Step 4: Add API Keys */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 3: Add API Keys via Dashboard
+              Step 4: Add API Keys via Dashboard
             </h3>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Open the sleek CLI Dashboard to safely input your free API keys (Gemini, Groq, OpenRouter). Keymux automatically saves them to <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">~/.keymux/config.json</code>.
+            Open the sleek CLI Dashboard to safely input your free API keys (Gemini, Groq, OpenRouter). Keymux automatically saves them to <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">~/.keymux/config.json</code>.
           </p>
           <CodeSnippet 
             rawText="keymux -d"
@@ -216,11 +237,11 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 4: Start Proxy */}
+        {/* Step 5: Start Proxy */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 4: Start the Proxy
+              Step 5: Start the Proxy
             </h3>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
@@ -240,11 +261,11 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 5: Attach Claude Code */}
+        {/* Step 6: Attach Claude Code */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 5: Attach Claude Code
+              Step 6: Attach Claude Code
             </h3>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
@@ -274,7 +295,7 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 6: Permanent Setup */}
+        {/* Step 7: Permanent Setup */}
         <motion.div variants={itemVariants} className="pt-10 border-t border-mistral-hairline-soft dark:border-mistral-ink-tint">
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-base font-semibold text-mistral-canvas flex items-center gap-2">
