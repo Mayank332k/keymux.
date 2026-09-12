@@ -9,16 +9,16 @@ import {
   Shield01Icon,
   DatabaseIcon,
   Search01Icon,
-  Sun01Icon,
-  Moon01Icon,
   Linkedin02Icon,
   Mail01Icon
 } from 'hugeicons-react';
+import { Sun, Moon } from 'lucide-react';
 import { InstallationSection } from './components/InstallationSection';
 import { TableOfContents } from './components/TableOfContents';
 import { ScrollReveal } from "@/components/lightswind/scroll-reveal";
 import { TextParticleAnimation } from '@/components/lightswind/text-particle-animation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeUp, staggerContainer } from '@/lib/motion-variants';
 
 function App() {
   const [isCopied, setIsCopied] = useState(false);
@@ -56,25 +56,12 @@ function App() {
     }, 2000);
   };
 
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const fadeUp = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
-  };
-
   return (
     <div className="min-h-[100dvh] bg-mistral-canvas dark:bg-[#121212] text-mistral-ink dark:text-mistral-canvas font-sans selection:bg-mistral-sunshine-300 selection:text-mistral-ink transition-colors duration-300">
       
       {/* Navigation */}
       <header className="sticky top-0 z-50 bg-white/60 dark:bg-black/40 backdrop-blur-2xl backdrop-saturate-150 border-b border-mistral-hairline-soft dark:border-mistral-ink-tint transition-all">
-        <div className="max-w-[1280px] mx-auto px-8 h-16 flex items-center justify-between">
+        <div className="max-w-[1280px] mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <a className="flex items-center group" href="#">
               <div className="h-7 flex items-center pt-1 overflow-visible">
@@ -92,34 +79,34 @@ function App() {
             </a>
           </div>
 
-          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-8 text-sm font-medium text-mistral-slate dark:text-mistral-muted">
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#">Home</a>
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#installation">Installation</a>
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#about">About</a>
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#contact">Contact</a>
+          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-6 md:p-8 text-sm font-medium text-mistral-slate dark:text-mistral-muted">
+            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#">Home</a>
+            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#installation">Installation</a>
+            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#about">About</a>
+            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#contact">Contact</a>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-2 rounded-md text-mistral-slate dark:text-mistral-muted hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint transition-all flex items-center justify-center"
+              className="p-2 rounded-lg text-mistral-slate dark:text-mistral-muted hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint transition-all flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]"
               aria-label="Toggle dark mode"
             >
-              {isDarkMode ? <Sun01Icon size={20} /> : <Moon01Icon size={20} />}
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            <a className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-medium bg-mistral-ink text-mistral-canvas hover:bg-mistral-ink-tint dark:bg-mistral-surface dark:text-mistral-ink dark:hover:bg-white transition-all" href="https://github.com/Mayank332k/keymux" target="_blank" rel="noopener noreferrer">
+            <a className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-mistral-ink text-mistral-canvas hover:bg-mistral-ink-tint dark:bg-mistral-surface dark:text-mistral-ink dark:hover:bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]" href="https://github.com/Mayank332k/keymux" target="_blank" rel="noopener noreferrer">
               <GithubIcon size={16} className="mr-2" />
               View on GitHub
             </a>
             
-            <a className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-md text-sm font-medium bg-mistral-primary text-white hover:bg-mistral-primary-deep transition-all" href="#early-access">
+            <a className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-mistral-primary text-white hover:bg-mistral-primary-deep transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]" href="#early-access">
               Get Started
             </a>
 
             {/* Mobile Hamburger Button */}
             <button 
-              className="lg:hidden p-2 rounded-md text-mistral-slate dark:text-mistral-muted hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint"
+              className="lg:hidden p-2 rounded-lg text-mistral-slate dark:text-mistral-muted hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <Cancel01Icon size={24} /> : <Menu01Icon size={24} />}
@@ -132,7 +119,7 @@ function App() {
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:hidden absolute top-16 inset-x-0 h-[calc(100vh-64px)] bg-white dark:bg-[#121212] px-8 py-10 flex flex-col gap-8 overflow-y-auto z-[999]"
+            className="lg:hidden absolute top-16 inset-x-0 h-[calc(100vh-64px)] bg-white dark:bg-[#121212] px-5 md:px-8 py-10 flex flex-col gap-6 md:p-8 overflow-y-auto z-[999]"
           >
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#installation" onClick={() => setIsMobileMenuOpen(false)}>Installation</a>
@@ -166,14 +153,14 @@ function App() {
         {/* Subtle radial fade for the grid so it's not too harsh everywhere */}
         <div className="absolute inset-0 bg-mistral-canvas dark:bg-[#121212] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black_100%)] pointer-events-none"></div>
 
-        <div className="max-w-[1280px] mx-auto px-8 xl:pr-72 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 items-center">
+        <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-6 md:p-8 items-center">
             
             {/* Left Column: Huge Copy */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" as const }}
+              initial={{ opacity: 0, y: 4, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="flex flex-col lg:col-span-7"
             >
               <div className="mb-8">
@@ -213,7 +200,7 @@ function App() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: "easeOut" as const }}
-              className="relative w-full aspect-square md:aspect-[4/3] rounded-2xl flex items-center justify-center p-4 sm:p-8 lg:col-span-5"
+              className="relative w-full aspect-square md:aspect-[4/3] rounded-2xl flex items-center justify-center p-4 sm:p-6 md:p-8 lg:col-span-5"
             >
               {/* Floating Code Mockup */}
               <div className="relative w-full max-w-[320px] sm:max-w-sm bg-mistral-surface-code border border-mistral-ink-tint rounded-xl shadow-2xl overflow-hidden transform sm:-rotate-2 hover:rotate-0 transition-transform duration-500">
@@ -243,13 +230,13 @@ function App() {
 
         {/* BEGIN: About Keymux Section */}
         <section className="py-16 md:py-24 bg-mistral-cream dark:bg-[#1a1a1c] border-b border-mistral-hairline-soft dark:border-mistral-ink-tint" id="about">
-          <div className="max-w-[1280px] mx-auto px-8 xl:pr-72">
+          <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, ease: "easeOut" as const }}
-              className="max-w-3xl"
+              initial={{ opacity: 0, y: 4, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="max-w-2xl"
             >
               <div className="mb-6">
                 <span className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest">
@@ -275,15 +262,15 @@ function App() {
             </motion.div>
 
             {/* Routing Logic Features */}
-            <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-6 md:p-8 lg:gap-12">
               
               {/* Auto Mode Card */}
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 4, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-                className="p-8 md:p-10 rounded-2xl bg-white dark:bg-[#121212] border border-mistral-hairline-strong dark:border-mistral-ink-tint shadow-sm relative overflow-hidden group"
+                transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+                className="bg-white dark:bg-[#121212] border border-mistral-hairline dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 shadow-sm flex flex-col h-full relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-mistral-sunshine-500 to-mistral-primary opacity-80"></div>
                 
@@ -348,11 +335,11 @@ function App() {
 
               {/* Strict Mode Card */}
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 4, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                className="p-8 md:p-10 rounded-2xl bg-white dark:bg-[#121212] border border-mistral-hairline-strong dark:border-mistral-ink-tint shadow-sm relative overflow-hidden group flex flex-col"
+                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                className="bg-white dark:bg-[#121212] border border-mistral-hairline dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 shadow-sm flex flex-col h-full relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-mistral-steel to-mistral-slate opacity-80 dark:from-mistral-ink-tint dark:to-mistral-slate"></div>
                 
@@ -407,7 +394,7 @@ function App() {
 
         {/* BEGIN: Architecture Section */}
         <section className="py-16 md:py-24 bg-mistral-surface dark:bg-[#121212] border-b border-mistral-hairline-soft dark:border-mistral-ink-tint" id="architecture">
-          <div className="max-w-[1280px] mx-auto px-8 xl:pr-72">
+          <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
             <motion.div 
               initial="hidden"
               whileInView="show"
@@ -424,7 +411,7 @@ function App() {
               </div>
 
               <div 
-                className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12"
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 md:p-8 mt-12"
               >
                 {[
                   { icon: Shield01Icon, title: 'Atomic Lock-Free Buffers', desc: 'Zero allocation during request hot-path. Atomic bitmasks verify quotas in nanoseconds without thread contention.' },
@@ -437,7 +424,7 @@ function App() {
                     whileInView="show"
                     viewport={{ once: true, margin: "-50px" }}
                     variants={fadeUp}
-                    className="p-8 rounded-lg bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-soft dark:border-mistral-ink-tint hover:-translate-y-[1px] hover:shadow-card-hover transition-all"
+                    className="p-6 md:p-8 rounded-lg bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-soft dark:border-mistral-ink-tint hover:-translate-y-[1px] hover:shadow-card-hover transition-all"
                   >
                     <div className="w-10 h-10 mb-6 text-mistral-primary">
                       <feature.icon size={32} strokeWidth={1.5} />
@@ -453,7 +440,7 @@ function App() {
 
         {/* BEGIN: Matrix Overview Section */}
         <section className="py-16 md:py-24 bg-mistral-canvas dark:bg-[#121212]" id="features">
-          <div className="max-w-[1280px] mx-auto px-8 xl:pr-72">
+          <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
             <motion.div 
               initial="hidden"
               whileInView="show"
@@ -479,7 +466,7 @@ function App() {
                     whileInView="show"
                     viewport={{ once: true, margin: "-50px" }}
                     variants={fadeUp}
-                    className="p-8 rounded-lg bg-mistral-cream dark:bg-[#1a1a1c] border border-mistral-beige-deep dark:border-mistral-ink-tint transition-all"
+                    className="p-6 md:p-8 rounded-lg bg-mistral-cream dark:bg-[#1a1a1c] border border-mistral-beige-deep dark:border-mistral-ink-tint transition-all"
                   >
                     <div className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest mb-6">
                       {item.num} / {item.title}
@@ -495,10 +482,10 @@ function App() {
         
         {/* BEGIN: Contact Section */}
         <section className="py-16 md:py-24 bg-mistral-cream-soft dark:bg-[#1a1a1c] border-t border-mistral-hairline-soft dark:border-mistral-ink-tint" id="contact">
-          <div className="max-w-[1280px] mx-auto px-8 xl:pr-72">
+          <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 4, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
               className="max-w-2xl mx-auto text-center mb-16"
             >
@@ -514,11 +501,11 @@ function App() {
             </motion.div>
 
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 4, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="max-w-xl mx-auto bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-strong dark:border-mistral-ink-tint rounded-xl p-6 sm:p-8 md:p-10 shadow-sm"
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="max-w-xl mx-auto bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-strong dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 lg:p-10 shadow-sm"
             >
               <form action="mailto:singhmayank4146@gmail.com" method="GET" encType="text/plain" className="flex flex-col gap-5 sm:gap-6">
                 <div className="flex flex-col gap-1.5 sm:gap-2">
@@ -543,7 +530,7 @@ function App() {
 
       {/* BEGIN: Footer */}
       <footer className="bg-mistral-cream dark:bg-[#1a1a1c] py-16 text-mistral-ink dark:text-mistral-canvas">
-        <div className="max-w-[1280px] mx-auto px-8">
+        <div className="max-w-[1280px] mx-auto px-5 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
@@ -579,12 +566,8 @@ function App() {
             </div>
           </div>
           
-          <div className="mt-16 pt-8 border-t border-mistral-beige-deep dark:border-mistral-ink-tint flex flex-col sm:flex-row items-center justify-between text-xs text-mistral-slate dark:text-mistral-muted">
+          <div className="mt-16 pt-8 border-t border-mistral-beige-deep dark:border-mistral-ink-tint flex items-center justify-center text-xs text-mistral-slate dark:text-mistral-muted text-center">
             <div>© 2026 Keymux Project Contributors. All rights reserved.</div>
-            <div className="mt-4 sm:mt-0 flex items-center gap-4">
-              <a href="#" className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors">Terms of Service</a>
-            </div>
           </div>
         </div>
       </footer>

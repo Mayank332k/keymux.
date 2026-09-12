@@ -142,13 +142,33 @@ export function TextParticleAnimation({
       }
     }
 
+    let isIdle = false;
+
     function animate() {
+      animationFrameId = window.requestAnimationFrame(animate);
+      
+      let totalVelocity = 0;
+      for (let i = 0; i < particles.length; i++) {
+        totalVelocity += Math.abs(particles[i].vx) + Math.abs(particles[i].vy);
+      }
+      
+      const isMouseActive = mouse.x !== -1000 && mouse.y !== -1000;
+      
+      if (totalVelocity < 0.1 && !isMouseActive && isIdle) {
+        return; // Skip rendering when idle to save CPU/GPU
+      }
+      
+      if (totalVelocity < 0.1 && !isMouseActive) {
+        isIdle = true;
+      } else {
+        isIdle = false;
+      }
+
       ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
       for (let i = 0; i < particles.length; i++) {
         particles[i].update();
         particles[i].draw();
       }
-      animationFrameId = window.requestAnimationFrame(animate);
     }
 
     const getMousePos = (e: MouseEvent) => {

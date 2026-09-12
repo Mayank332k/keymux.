@@ -111,15 +111,15 @@ export function ShinyText({
   const finalShineColor = shineColor || defaultShineColor;
 
   const createGradient = () => {
-    const transparentStartPos = Math.max(0, (50 - shineWidth / 2));
-    const transparentEndPos = Math.min(100, (50 + shineWidth / 2));
+    const shineStartPos = Math.max(0, (50 - shineWidth / 2));
+    const shineEndPos = Math.min(100, (50 + shineWidth / 2));
 
-    const shineStart = `${finalShineColor} ${transparentStartPos}%`;
-    const shineEnd = `${finalShineColor} ${transparentEndPos}%`;
+    const shineStart = `${finalShineColor} ${shineStartPos}%`;
+    const shineEnd = `${finalShineColor} ${shineEndPos}%`;
 
     return gradientType === "linear"
-      ? `linear-gradient(${gradientDirection}, ${finalBaseColor}, transparent ${transparentStartPos - 5}%, ${shineStart}, ${shineEnd}, transparent ${transparentEndPos + 5}%, ${finalBaseColor})`
-      : `radial-gradient(ellipse at center, ${finalShineColor} ${intensity * 100}%, transparent)`;
+      ? `linear-gradient(${gradientDirection}, ${finalBaseColor} calc(${shineStartPos}% - 15%), ${shineStart}, ${shineEnd}, ${finalBaseColor} calc(${shineEndPos}% + 15%))`
+      : `radial-gradient(ellipse at center, ${finalShineColor} ${intensity * 100}%, ${finalBaseColor})`;
   };
 
   // Define the animate state structure consistently

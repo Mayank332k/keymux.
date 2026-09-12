@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Tick01Icon, Copy01Icon } from 'hugeicons-react';
 import { ShinyText } from "@/components/lightswind/shiny-text";
 import { motion } from 'framer-motion';
@@ -11,15 +11,22 @@ interface CodeBlockProps {
 
 function CodeSnippet({ label, code, rawText }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(rawText);
+  const handleCopy = async () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(rawText);
+    } catch (err) {
+      console.warn('Failed to copy:', err);
+    } finally {
+      timeoutRef.current = setTimeout(() => setCopied(false), 1500);
+    }
   };
 
   return (
-    <div className="relative group flex flex-col bg-[#121214] dark:bg-[#0a0a0b] border border-mistral-hairline-strong dark:border-mistral-ink-tint/50 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+    <div className="relative group flex flex-col bg-[#121214] dark:bg-[#0a0a0b] border border-mistral-hairline-strong dark:border-mistral-ink-tint/50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
       
       {/* Top Bar with Mac dots */}
       <div className="flex items-center justify-between px-4 py-3 bg-white/5 dark:bg-white/[0.02] border-b border-white/5">
@@ -74,7 +81,7 @@ export function InstallationSection() {
   };
 
   return (
-    <section className="w-full max-w-[1280px] mx-auto px-8 xl:pr-72 py-16 md:py-24 relative border-t border-mistral-hairline-soft dark:border-mistral-ink-tint" id="installation">
+    <section className="w-full max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72 py-16 md:py-24 relative border-t border-mistral-hairline-soft dark:border-mistral-ink-tint" id="installation">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -98,7 +105,7 @@ export function InstallationSection() {
           By default, the Claude Code app asks you to log in with an Anthropic account and charges you per token. But using Keymux, you can reroute it to use Free APIs (like Google Gemini, Groq, or OpenRouter) completely transparently!
         </p>
         <p className="text-lg text-mistral-slate dark:text-mistral-muted leading-[1.50] mb-12">
-          This also works flawlessly as a drop-in proxy for the <ShinyText speed={5} repeatDelay={4} baseColor="#94a3b8" shineColor="#fa520f" className="inline font-medium">Claude Code CLI, Claude Desktop, and Claude Code extension</ShinyText>, along with popular code editor extensions like <strong className="font-medium text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
+          This also works flawlessly as a drop-in proxy for the <motion.span whileInView={{ opacity: 1 }} viewport={{ once: false, amount: 0.1 }} className="inline-block"><ShinyText speed={5} repeatDelay={4} baseColor="#94a3b8" shineColor="#fa520f" className="inline font-medium">Claude Code CLI, Claude Desktop, and Claude Code extension</ShinyText></motion.span>, along with popular code editor extensions like <strong className="font-medium text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
         </p>
       </motion.div>
 
@@ -323,8 +330,8 @@ export function InstallationSection() {
           <h3 className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest mb-8">
             Why this is awesome
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 rounded-xl bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint relative overflow-hidden group">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:p-8">
+            <div className="p-6 rounded-lg bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity font-editorial text-7xl font-bold italic text-mistral-primary">
                 01
               </div>
@@ -334,7 +341,7 @@ export function InstallationSection() {
               </p>
             </div>
             
-            <div className="p-6 rounded-xl bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint relative overflow-hidden group">
+            <div className="p-6 rounded-lg bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity font-editorial text-7xl font-bold italic text-mistral-primary">
                 02
               </div>
@@ -344,7 +351,7 @@ export function InstallationSection() {
               </p>
             </div>
             
-            <div className="p-6 rounded-xl bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint relative overflow-hidden group">
+            <div className="p-6 rounded-lg bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity font-editorial text-7xl font-bold italic text-mistral-primary">
                 03
               </div>
