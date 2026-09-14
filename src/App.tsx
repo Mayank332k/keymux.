@@ -1,37 +1,62 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Menu01Icon, 
   Cancel01Icon, 
   GithubIcon, 
   Copy01Icon, 
   Tick01Icon,
-  ZapIcon,
-  Shield01Icon,
-  DatabaseIcon,
-  Search01Icon,
+  
+  
+  
   Linkedin02Icon,
   Mail01Icon
 } from 'hugeicons-react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 import { InstallationSection } from './components/InstallationSection';
 import { TableOfContents } from './components/TableOfContents';
 import { ScrollReveal } from "@/components/lightswind/scroll-reveal";
-import { TextParticleAnimation } from '@/components/lightswind/text-particle-animation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { fadeUp, staggerContainer } from '@/lib/motion-variants';
+import { TextParticleAnimation } from "@/components/lightswind/text-particle-animation";
+import { gsap, useGSAP } from '@/lib/gsap';
+import { MagneticElement } from '@/components/motion/MagneticElement';
+import { HorizontalScrollSection } from '@/components/motion/HorizontalScrollSection';
+import { AlternatingScrollCard } from '@/components/motion/AlternatingScrollCard';
+import TextScrollMarquee from '@/components/lightswind/text-scroll-marquee';
+import { motion } from 'framer-motion';
+
+type ThemeMode = 'light' | 'dark' | 'system';
 
 function App() {
   const [isCopied, setIsCopied] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>('system');
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    const root = document.documentElement;
+    
+    const applyTheme = () => {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const shouldBeDark = theme === 'dark' || (theme === 'system' && prefersDark);
+      
+      if (shouldBeDark) {
+        root.classList.add('dark');
+        setIsDarkMode(true);
+      } else {
+        root.classList.remove('dark');
+        setIsDarkMode(false);
+      }
+    };
+
+    applyTheme();
+
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = () => applyTheme();
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
     }
-  }, [isDarkMode]);
+  }, [theme]);
 
   // Handle direct links with hashes on initial load
   useEffect(() => {
@@ -56,11 +81,121 @@ function App() {
     }, 2000);
   };
 
+  const headerRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      // 1. Navigation Scroll Response
+      // Transition from transparent to frosted glass on scroll
+      if (headerRef.current) {
+        gsap.fromTo(headerRef.current, 
+          { 
+            backgroundColor: "transparent", 
+            borderBottomColor: "transparent",
+            backdropFilter: "blur(0px) saturate(100%)"
+          },
+          {
+            backgroundColor: isDarkMode ? "rgba(0, 0, 0, 0.4)" : "rgba(255, 255, 255, 0.6)",
+            borderBottomColor: isDarkMode ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+            backdropFilter: "blur(16px) saturate(150%)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: "body",
+              start: "top -50",
+              end: "top -150",
+              scrub: true
+            }
+          }
+        );
+      }
+
+      // 2. Hero Ambient Blob Parallax
+      if (heroRef.current) {
+        const blobs = heroRef.current.querySelectorAll('.ambient-blob');
+        
+        const moveBlobs = (e: MouseEvent) => {
+          const { innerWidth, innerHeight } = window;
+          const xPos = (e.clientX / innerWidth - 0.5) * 2; // -1 to 1
+          const yPos = (e.clientY / innerHeight - 0.5) * 2;
+          
+          gsap.to(blobs[0], { x: xPos * 40, y: yPos * 40, duration: 2, ease: "power2.out" });
+          gsap.to(blobs[1], { x: xPos * -30, y: yPos * -30, duration: 2.5, ease: "power2.out" });
+          gsap.to(blobs[2], { x: xPos * 20, y: yPos * -20, duration: 3, ease: "power2.out" });
+        };
+        
+        window.addEventListener('mousemove', moveBlobs);
+      }
+
+      // 3. Hero Initial Reveal Animation
+      gsap.fromTo(".hero-badge", 
+        { y: "100%" }, 
+        { y: "0%", duration: 0.8, ease: "power4.out", delay: 0.2 }
+      );
+      gsap.fromTo(".hero-text",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power4.out", stagger: 0.15, delay: 0.4 }
+      );
+      gsap.fromTo(".hero-terminal",
+        { opacity: 0, scale: 0.95, rotationX: 5 },
+        { opacity: 1, scale: 1, rotationX: 0, duration: 1.2, ease: "power3.out", delay: 0.6 }
+      );
+
+      // 4. Scroll-Driven Section Reveals
+      const revealSections = document.querySelectorAll('.gsap-reveal-section');
+      revealSections.forEach((section) => {
+        gsap.fromTo(section, 
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8, 
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 85%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      });
+
+      // 5. Staggered Grid Reveals
+      const grids = document.querySelectorAll('.gsap-stagger-grid');
+      grids.forEach((grid) => {
+        const cards = grid.querySelectorAll('.gsap-stagger-card');
+        gsap.fromTo(cards,
+          { opacity: 0, y: 30, scale: 0.98 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: grid,
+              start: "top 80%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      });
+    });
+
+    return () => {
+      // Clean up window listener for hero parallax if component unmounts
+      // useGSAP handles most GSAP cleanup automatically
+    };
+  }, [isDarkMode]);
+
   return (
     <div className="min-h-[100dvh] bg-mistral-canvas dark:bg-[#121212] text-mistral-ink dark:text-mistral-canvas font-sans selection:bg-mistral-sunshine-300 selection:text-mistral-ink transition-colors duration-300">
       
       {/* Navigation */}
-      <header className="sticky top-0 z-50 bg-white/60 dark:bg-black/40 backdrop-blur-2xl backdrop-saturate-150 border-b border-mistral-hairline-soft dark:border-mistral-ink-tint transition-all">
+      <header ref={headerRef} className="sticky top-0 z-50 bg-transparent border-b border-transparent transition-all">
         <div className="max-w-[1280px] mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <a className="flex items-center group" href="#">
@@ -79,30 +214,74 @@ function App() {
             </a>
           </div>
 
-          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-6 md:p-8 text-sm font-medium text-mistral-slate dark:text-mistral-muted">
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#">Home</a>
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#installation">Installation</a>
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#about">About</a>
-            <a className="hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm" href="#contact">Contact</a>
+          <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-8 md:p-8 text-sm font-medium text-mistral-slate dark:text-mistral-muted">
+            {['Home', 'Installation', 'About', 'Contact'].map((item) => (
+              <a 
+                key={item}
+                className="relative group hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm py-1" 
+                href={item === 'Home' ? '#' : `#${item.toLowerCase()}`}
+              >
+                {item}
+                <span className="absolute left-0 bottom-0 w-0 h-[1.5px] bg-mistral-primary transition-all duration-300 ease-out group-hover:w-full"></span>
+              </a>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-2 rounded-lg text-mistral-slate dark:text-mistral-muted hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint transition-all flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            <a className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-mistral-ink text-mistral-canvas hover:bg-mistral-ink-tint dark:bg-mistral-surface dark:text-mistral-ink dark:hover:bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]" href="https://github.com/Mayank332k/keymux" target="_blank" rel="noopener noreferrer">
-              <GithubIcon size={16} className="mr-2" />
-              View on GitHub
-            </a>
             
-            <a className="hidden sm:inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-mistral-primary text-white hover:bg-mistral-primary-deep transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]" href="#early-access">
-              Get Started
-            </a>
+            <div className="relative">
+              <button
+                onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+                className="p-2 rounded-lg text-mistral-slate dark:text-mistral-muted hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint transition-all flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]"
+                aria-label="Select theme"
+              >
+                {theme === 'system' ? <Monitor size={20} /> : theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+              </button>
+              
+              {isThemeDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsThemeDropdownOpen(false)}></div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="absolute right-0 mt-3 w-36 rounded-xl shadow-2xl bg-white/90 dark:bg-[#1a1a1c]/90 backdrop-blur-xl border border-black/5 dark:border-white/5 z-50 overflow-hidden"
+                  >
+                    <button 
+                      onClick={() => { setTheme('light'); setIsThemeDropdownOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-mistral-cream dark:hover:bg-[#252528] transition-colors ${theme === 'light' ? 'text-mistral-primary font-medium' : 'text-mistral-ink dark:text-mistral-canvas'}`}
+                    >
+                      <Sun size={16} /> Light
+                    </button>
+                    <button 
+                      onClick={() => { setTheme('dark'); setIsThemeDropdownOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-mistral-cream dark:hover:bg-[#252528] transition-colors border-t border-black/5 dark:border-white/5 ${theme === 'dark' ? 'text-mistral-primary font-medium' : 'text-mistral-ink dark:text-mistral-canvas'}`}
+                    >
+                      <Moon size={16} /> Dark
+                    </button>
+                    <button 
+                      onClick={() => { setTheme('system'); setIsThemeDropdownOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-mistral-cream dark:hover:bg-[#252528] transition-colors border-t border-black/5 dark:border-white/5 ${theme === 'system' ? 'text-mistral-primary font-medium' : 'text-mistral-ink dark:text-mistral-canvas'}`}
+                    >
+                      <Monitor size={16} /> System
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </div>
+
+            <MagneticElement strength={0.2} className="hidden sm:inline-flex">
+              <a className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-mistral-ink text-mistral-canvas hover:bg-mistral-ink-tint dark:bg-mistral-surface dark:text-mistral-ink dark:hover:bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]" href="https://github.com/Mayank332k/keymux" target="_blank" rel="noopener noreferrer">
+                <GithubIcon size={16} className="mr-2" />
+                View on GitHub
+              </a>
+            </MagneticElement>
+            
+            <MagneticElement strength={0.3} className="hidden sm:inline-flex">
+              <a className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium bg-mistral-primary text-white hover:bg-mistral-primary-deep transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212]" href="#early-access">
+                Get Started
+              </a>
+            </MagneticElement>
 
             {/* Mobile Hamburger Button */}
             <button 
@@ -141,11 +320,11 @@ function App() {
 
       <main className="overflow-x-hidden">
         {/* BEGIN: Hero Section */}
-        <section className="relative pt-16 pb-24 md:pt-24 md:pb-32 bg-mistral-canvas dark:bg-[#121212] bg-mistral-grid border-b border-mistral-hairline-soft dark:border-mistral-ink-tint overflow-hidden" id="overview">
+        <section ref={heroRef} className="relative pt-16 pb-24 md:pt-24 md:pb-32 bg-mistral-canvas dark:bg-[#121212] bg-mistral-grid border-b border-mistral-hairline-soft dark:border-mistral-ink-tint overflow-hidden" id="overview">
         {/* Ambient Background Blobs */}
-        <div className="absolute top-1/4 left-[-10%] w-[500px] h-[500px] bg-mistral-sunshine-300/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none"></div>
-        <div className="absolute top-1/3 right-[-5%] w-[600px] h-[600px] bg-mistral-primary/10 rounded-full mix-blend-multiply filter blur-[150px] opacity-70 pointer-events-none"></div>
-        <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#a78bfa]/10 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none"></div>
+        <div className="ambient-blob absolute top-1/4 left-[-10%] w-[500px] h-[500px] bg-mistral-sunshine-300/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none"></div>
+        <div className="ambient-blob absolute top-1/3 right-[-5%] w-[600px] h-[600px] bg-mistral-primary/10 rounded-full mix-blend-multiply filter blur-[150px] opacity-70 pointer-events-none"></div>
+        <div className="ambient-blob absolute -bottom-32 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#a78bfa]/10 rounded-full mix-blend-multiply filter blur-[120px] opacity-70 pointer-events-none"></div>
         
         {/* Visual Glow / Mesh Behind Text for Engagement */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[600px] bg-mistral-cream-deeper/30 dark:bg-mistral-ink/20 rounded-full mix-blend-normal filter blur-[100px] opacity-60 pointer-events-none"></div>
@@ -157,14 +336,9 @@ function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-6 md:p-8 items-center">
             
             {/* Left Column: Huge Copy */}
-            <motion.div 
-              initial={{ opacity: 0, y: 4, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="flex flex-col lg:col-span-7"
-            >
-              <div className="mb-8">
-                <span className="font-mono text-sm font-semibold text-mistral-steel uppercase tracking-widest">
+            <div className="flex flex-col lg:col-span-7">
+              <div className="mb-8 overflow-hidden">
+                <span className="hero-badge font-mono text-sm font-semibold text-mistral-steel uppercase tracking-widest inline-block">
                   v1.2 Released
                 </span>
               </div>
@@ -176,32 +350,32 @@ function App() {
                   padding={30}
                 />
               </div>
-              <p className="text-lg md:text-2xl text-mistral-slate dark:text-mistral-muted leading-[1.5] max-w-xl mb-12">
+              <p className="hero-text text-lg md:text-2xl text-mistral-slate dark:text-mistral-muted leading-[1.5] max-w-xl mb-12">
                 A lightweight multiplexer for local agent orchestration. 
                 Seamlessly route Claude Code context through a unified port.
               </p>
 
-              <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                <a className="inline-flex items-center justify-center px-6 py-3 sm:py-2.5 rounded-md text-base sm:text-sm font-medium bg-mistral-primary text-white hover:bg-mistral-primary-deep transition-all w-full sm:w-auto text-center" href="#installation">
-                  Get Started
-                </a>
-                <button 
-                  onClick={handleCopy}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-md text-base sm:text-sm font-medium bg-transparent border border-mistral-hairline-strong dark:border-mistral-ink-tint text-mistral-ink dark:text-mistral-canvas hover:bg-mistral-surface dark:hover:bg-mistral-ink transition-all w-full sm:w-auto text-center"
-                >
-                  {isCopied ? <Tick01Icon size={16} className="text-emerald-600" /> : <Copy01Icon size={16} />}
-                  <span className="font-mono">git clone ...</span>
-                </button>
-              </motion.div>
-            </motion.div>
+              <div className="hero-text mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+                <MagneticElement strength={0.3} className="w-full sm:w-auto">
+                  <a className="inline-flex items-center justify-center px-6 py-3 sm:py-2.5 rounded-md text-base sm:text-sm font-medium bg-mistral-primary text-white hover:bg-mistral-primary-deep transition-all w-full text-center" href="#installation">
+                    Get Started
+                  </a>
+                </MagneticElement>
+                
+                <MagneticElement strength={0.15} className="w-full sm:w-auto">
+                  <button 
+                    onClick={handleCopy}
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-md text-base sm:text-sm font-medium bg-transparent border border-mistral-hairline-strong dark:border-mistral-ink-tint text-mistral-ink dark:text-mistral-canvas hover:bg-mistral-surface dark:hover:bg-mistral-ink transition-all w-full text-center"
+                  >
+                    {isCopied ? <Tick01Icon size={16} className="text-emerald-600" /> : <Copy01Icon size={16} />}
+                    <span className="font-mono">git clone ...</span>
+                  </button>
+                </MagneticElement>
+              </div>
+            </div>
 
             {/* Right Column: Mock Terminal */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" as const }}
-              className="relative w-full aspect-square md:aspect-[4/3] rounded-2xl flex items-center justify-center p-4 sm:p-6 md:p-8 lg:col-span-5"
-            >
+            <div className="hero-terminal relative w-full aspect-square md:aspect-[4/3] rounded-2xl flex items-center justify-center p-4 sm:p-6 md:p-8 lg:col-span-5" style={{ perspective: "1000px" }}>
               {/* Floating Code Mockup */}
               <div className="relative w-full max-w-[320px] sm:max-w-sm bg-mistral-surface-code border border-mistral-ink-tint rounded-xl shadow-2xl overflow-hidden transform sm:-rotate-2 hover:rotate-0 transition-transform duration-500">
                 <div className="flex items-center px-4 py-3 border-b border-mistral-ink-tint bg-[#2a2a2c]">
@@ -220,7 +394,7 @@ function App() {
                   <p className="text-mistral-steel mt-4">Waiting for incoming connections...</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
           </div>
         </div>
@@ -231,15 +405,9 @@ function App() {
         {/* BEGIN: About Keymux Section */}
         <section className="py-16 md:py-24 bg-mistral-cream dark:bg-[#1a1a1c] border-b border-mistral-hairline-soft dark:border-mistral-ink-tint" id="about">
           <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
-            <motion.div 
-              initial={{ opacity: 0, y: 4, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="max-w-2xl"
-            >
-              <div className="mb-6">
-                <span className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest">
+            <div className="gsap-reveal-section max-w-2xl">
+              <div className="mb-6 overflow-hidden">
+                <span className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest inline-block">
                   About
                 </span>
               </div>
@@ -259,149 +427,18 @@ function App() {
                   Zero jitter. Lock-free execution. Just point your agent to `localhost:8080` and let the multiplexer handle the rest.
                 </p>
               </div>
-            </motion.div>
-
-            {/* Routing Logic Features */}
-            <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-6 md:p-8 lg:gap-12">
-              
-              {/* Auto Mode Card */}
-              <motion.div 
-                initial={{ opacity: 0, y: 4, scale: 0.98 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
-                className="bg-white dark:bg-[#121212] border border-mistral-hairline dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 shadow-sm flex flex-col h-full relative overflow-hidden"
-              >
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-mistral-sunshine-500 to-mistral-primary opacity-80"></div>
-                
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-mistral-sunshine-300/20 dark:bg-mistral-sunshine-300/10 flex items-center justify-center text-mistral-primary">
-                    <ZapIcon size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas tracking-tight">Auto Mode</h3>
-                    <p className="text-xs font-mono font-medium text-mistral-primary tracking-wide uppercase mt-1">Smart TTFT & Dynamic Translation</p>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <span className="inline-block px-2.5 py-1 rounded bg-mistral-hairline-soft dark:bg-mistral-surface-code text-[11px] font-semibold text-mistral-slate dark:text-mistral-muted tracking-wide uppercase">
-                    Best for: High-availability workflows & autonomous agents
-                  </span>
-                </div>
-
-                <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-[1.6] mb-6">
-                  In Auto Mode, Keymux prioritizes <strong>Speed and Uptime</strong> over model strictness. The routing logic executes in four distinct phases:
-                </p>
-
-                <ol className="space-y-4 mb-8">
-                  <li className="flex gap-4">
-                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">1</span>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Health Verification</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Filters out any keys currently blocked by the Circuit Breaker (e.g., in a cooling period after hitting a 429 Rate Limit).</p>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">2</span>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">TTFT Baseline</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Analyzes the Exponential Moving Average (EMA) of the Time-To-First-Token latency across all healthy keys to identify the absolute fastest provider.</p>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">3</span>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Tolerance Banding</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Creates a dynamic +100ms window around the fastest baseline to establish a "Fast Pool" of elite providers.</p>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <span className="font-editorial italic text-2xl text-mistral-steel dark:text-mistral-ink-tint">4</span>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Utilization Tie-Breaker</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Selects the key from the Fast Pool that has the lowest API quota utilization (RPM / Limit).</p>
-                    </div>
-                  </li>
-                </ol>
-
-                <div className="p-5 rounded-lg bg-mistral-cream-soft dark:bg-[#1a1a1c] border border-mistral-hairline dark:border-mistral-ink-tint/50">
-                  <h4 className="text-[11px] font-mono font-bold text-mistral-ink dark:text-mistral-canvas uppercase tracking-widest mb-2">Dynamic Model Translation</h4>
-                  <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">
-                    If the selected provider differs from the requested model, Keymux transparently translates the payload to the optimal flagship model. For example, if OpenRouter is congested, Keymux seamlessly routes to Groq targeting <code className="font-mono text-[10px] bg-mistral-hairline-soft dark:bg-black/40 px-1 py-0.5 rounded text-mistral-primary">llama-3.1-70b-versatile</code>, preventing crashes.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Strict Mode Card */}
-              <motion.div 
-                initial={{ opacity: 0, y: 4, scale: 0.98 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
-                className="bg-white dark:bg-[#121212] border border-mistral-hairline dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 shadow-sm flex flex-col h-full relative overflow-hidden"
-              >
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-mistral-steel to-mistral-slate opacity-80 dark:from-mistral-ink-tint dark:to-mistral-slate"></div>
-                
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-full bg-mistral-hairline-soft dark:bg-mistral-surface-code flex items-center justify-center text-mistral-slate dark:text-mistral-muted">
-                    <Shield01Icon size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas tracking-tight">Strict Mode</h3>
-                    <p className="text-xs font-mono font-medium text-mistral-slate dark:text-mistral-muted tracking-wide uppercase mt-1">Enforced Model Routing</p>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <span className="inline-block px-2.5 py-1 rounded bg-mistral-hairline-soft dark:bg-mistral-surface-code text-[11px] font-semibold text-mistral-slate dark:text-mistral-muted tracking-wide uppercase">
-                    Best for: Production, benchmarking & strict adherence
-                  </span>
-                </div>
-
-                <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-[1.6] mb-6">
-                  In Strict Mode, Keymux prioritizes <strong>Model Consistency</strong> over absolute uptime. The routing logic ensures precise capability matching:
-                </p>
-
-                <ul className="space-y-6 mb-8 flex-grow">
-                  <li className="flex gap-4">
-                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-mistral-slate dark:bg-mistral-muted shrink-0"></div>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Isolated Pools</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">The router filters the healthy pool to only include keys explicitly supporting the requested model (e.g. strict Anthropic keys for <code className="font-mono text-[10px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1 py-0.5 rounded">claude-3-5-sonnet</code>).</p>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-mistral-slate dark:bg-mistral-muted shrink-0"></div>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Intra-Model Balancing</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">Applies the same TTFT & Utilization load-balancing logic, but strictly contained within the keys designated for that exact model.</p>
-                    </div>
-                  </li>
-                  <li className="flex gap-4">
-                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-rose-500/80 shrink-0"></div>
-                    <div>
-                      <h4 className="text-sm font-bold text-mistral-ink dark:text-mistral-canvas mb-1">Hard Fails</h4>
-                      <p className="text-sm text-mistral-slate dark:text-mistral-muted leading-relaxed">If all keys for the requested model are rate-limited or the API drops, Keymux gracefully returns a standard HTTP 429/500 error instead of silently switching to a different LLM family.</p>
-                    </div>
-                  </li>
-                </ul>
-              </motion.div>
-              
             </div>
           </div>
         </section>
 
+        {/* Routing Logic Features - Horizontal Scroll GSAP */}
+        <HorizontalScrollSection />
+
         {/* BEGIN: Architecture Section */}
         <section className="py-16 md:py-24 bg-mistral-surface dark:bg-[#121212] border-b border-mistral-hairline-soft dark:border-mistral-ink-tint" id="architecture">
           <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
-            <motion.div 
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              <div className="max-w-2xl mb-16">
+            <div>
+              <div className="gsap-reveal-section max-w-2xl mb-16">
                 <h2 className="font-editorial text-[52px] font-normal tracking-[-0.5px] leading-[1.15] text-mistral-ink dark:text-mistral-canvas">
                   Zero-jitter failover in sub-millisecond execution.
                 </h2>
@@ -410,85 +447,57 @@ function App() {
                 </p>
               </div>
 
-              <div 
-                className="grid grid-cols-1 md:grid-cols-3 gap-6 md:p-8 mt-12"
-              >
-                {[
-                  { icon: Shield01Icon, title: 'Atomic Lock-Free Buffers', desc: 'Zero allocation during request hot-path. Atomic bitmasks verify quotas in nanoseconds without thread contention.' },
-                  { icon: DatabaseIcon, title: 'Native MCP Bridging', desc: 'Integrated Model Context Protocol socket bridging. Directly injects as an MCP routing daemon for terminal work agents.' },
-                  { icon: Search01Icon, title: 'Cross-Provider Mapping', desc: 'Universal OpenAI format compliance. Automatic schema mapping between Anthropic tool-calls and Gemini payloads.' }
-                ].map((feature, i) => (
-                  <motion.div 
-                    key={i}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, margin: "-50px" }}
-                    variants={fadeUp}
-                    className="p-6 md:p-8 rounded-lg bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-soft dark:border-mistral-ink-tint hover:-translate-y-[1px] hover:shadow-card-hover transition-all"
-                  >
-                    <div className="w-10 h-10 mb-6 text-mistral-primary">
-                      <feature.icon size={32} strokeWidth={1.5} />
-                    </div>
-                    <h3 className="font-sans text-[22px] font-medium text-mistral-ink dark:text-mistral-canvas leading-[1.30] mb-3">{feature.title}</h3>
-                    <p className="text-base text-mistral-slate dark:text-mistral-muted font-normal leading-[1.55]">{feature.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+            </div>
+          </div>
+          
+          <div className="w-full flex flex-col gap-8 md:gap-12 mt-4 pb-24 overflow-hidden relative">
+            <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-mistral-surface dark:from-[#121212] to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-mistral-surface dark:from-[#121212] to-transparent z-10 pointer-events-none"></div>
+            
+            <TextScrollMarquee scrollDependent baseVelocity={-2} className="text-[12vw] md:text-8xl lg:text-[10rem] font-editorial tracking-tight text-mistral-ink dark:text-mistral-canvas opacity-90 pr-8">
+              Atomic Lock-Free Buffers — 
+            </TextScrollMarquee>
+            <TextScrollMarquee scrollDependent baseVelocity={2.5} className="text-[12vw] md:text-8xl lg:text-[10rem] font-editorial tracking-tight text-mistral-ink dark:text-mistral-canvas opacity-50 pr-8">
+              Native MCP Bridging — 
+            </TextScrollMarquee>
+            <TextScrollMarquee scrollDependent baseVelocity={-1.5} className="text-[12vw] md:text-8xl lg:text-[10rem] font-editorial tracking-tight text-mistral-ink dark:text-mistral-canvas opacity-90 pr-8">
+              Cross-Provider Mapping — 
+            </TextScrollMarquee>
           </div>
         </section>
 
         {/* BEGIN: Matrix Overview Section */}
-        <section className="py-16 md:py-24 bg-mistral-canvas dark:bg-[#121212]" id="features">
-          <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
-            <motion.div 
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              <div className="mb-16">
-                <h2 className="font-editorial text-[52px] font-normal tracking-[-0.5px] leading-[1.15] text-mistral-ink dark:text-mistral-canvas max-w-3xl">
-                  Engineered for production agent loops
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-                {[
-                  { num: '01', title: 'Ring Buffer', name: 'Lock-Free Sliding Ring', desc: 'Maintains high-frequency request queues without mutex deadlock risks. Handles 100,000 req/sec per node.' },
-                  { num: '02', title: 'Adaptive Pacing', name: 'Sliding RPM Quotas', desc: 'Predictive tier pacing prevents provider rate limits before they happen by dynamically shedding low-priority batch workers.' },
-                  { num: '03', title: 'Sanitizer', name: 'Auto Base64 Normalizer', desc: 'Zero-downtime payload sanitation automatically converts non-standard image URLs and binary payloads to target-compatible formats.' },
-                  { num: '04', title: 'Observability', name: 'OpenTelemetry Native', desc: 'Full tracing spans exported through OTLP. Pinpoint slow upstream provider time-to-first-token.' }
-                ].map((item) => (
-                  <motion.div 
-                    key={item.num}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, margin: "-50px" }}
-                    variants={fadeUp}
-                    className="p-6 md:p-8 rounded-lg bg-mistral-cream dark:bg-[#1a1a1c] border border-mistral-beige-deep dark:border-mistral-ink-tint transition-all"
-                  >
-                    <div className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest mb-6">
-                      {item.num} / {item.title}
-                    </div>
-                    <h3 className="font-sans text-[22px] font-medium text-mistral-ink dark:text-mistral-canvas leading-[1.30] mb-3">{item.name}</h3>
-                    <p className="text-base text-mistral-slate dark:text-mistral-muted font-normal leading-[1.55]">{item.desc}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+        <section className="bg-mistral-canvas dark:bg-[#121212] overflow-hidden" id="features">
+          <div className="py-24 max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
+            <div className="gsap-reveal-section">
+              <h2 className="font-editorial text-[52px] font-normal tracking-[-0.5px] leading-[1.15] text-mistral-ink dark:text-mistral-canvas max-w-3xl">
+                Engineered for production agent loops
+              </h2>
+            </div>
+          </div>
+          
+          <div className="flex flex-col relative w-full">
+            {[
+              { num: '01', title: 'Ring Buffer', name: 'Lock-Free Sliding Ring', desc: 'Maintains high-frequency request queues without mutex deadlock risks. Handles 100,000 req/sec per node.' },
+              { num: '02', title: 'Adaptive Pacing', name: 'Sliding RPM Quotas', desc: 'Predictive tier pacing prevents provider rate limits before they happen by dynamically shedding low-priority batch workers.' },
+              { num: '03', title: 'Sanitizer', name: 'Auto Base64 Normalizer', desc: 'Zero-downtime payload sanitation automatically converts non-standard image URLs and binary payloads to target-compatible formats.' },
+              { num: '04', title: 'Observability', name: 'OpenTelemetry Native', desc: 'Full tracing spans exported through OTLP. Pinpoint slow upstream provider time-to-first-token.' }
+            ].map((item, idx) => (
+              <AlternatingScrollCard 
+                key={item.num}
+                index={idx}
+                title={item.title}
+                name={item.name}
+                desc={item.desc}
+              />
+            ))}
           </div>
         </section>
         
         {/* BEGIN: Contact Section */}
         <section className="py-16 md:py-24 bg-mistral-cream-soft dark:bg-[#1a1a1c] border-t border-mistral-hairline-soft dark:border-mistral-ink-tint" id="contact">
           <div className="max-w-[1280px] mx-auto px-5 md:px-8 xl:pr-72">
-            <motion.div 
-              initial={{ opacity: 0, y: 4, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-center mb-16"
-            >
+            <div className="gsap-reveal-section max-w-2xl mx-auto text-center mb-16">
               <span className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest mb-4 block">
                 Contact
               </span>
@@ -498,15 +507,9 @@ function App() {
               <p className="text-lg text-mistral-slate dark:text-mistral-muted leading-[1.6]">
                 Have a question or want to integrate Keymux into your workflow? Send a message directly to the maintainer.
               </p>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              initial={{ opacity: 0, y: 4, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.4 }}
-              className="max-w-xl mx-auto bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-strong dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 lg:p-10 shadow-sm"
-            >
+            <div className="gsap-reveal-section max-w-xl mx-auto bg-mistral-canvas dark:bg-[#1a1a1c] border border-mistral-hairline-strong dark:border-mistral-ink-tint rounded-xl p-6 md:p-8 lg:p-10 shadow-sm">
               <form action="mailto:singhmayank4146@gmail.com" method="GET" encType="text/plain" className="flex flex-col gap-5 sm:gap-6">
                 <div className="flex flex-col gap-1.5 sm:gap-2">
                   <label htmlFor="subject" className="text-sm font-medium text-mistral-ink dark:text-mistral-canvas">Subject</label>
@@ -520,7 +523,7 @@ function App() {
                   Send Message
                 </button>
               </form>
-            </motion.div>
+            </div>
           </div>
         </section>
         

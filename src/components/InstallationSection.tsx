@@ -11,7 +11,7 @@ interface CodeBlockProps {
 
 function CodeSnippet({ label, code, rawText }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleCopy = async () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -95,8 +95,13 @@ export function InstallationSection() {
           </span>
         </div>
 
-        <h2 className="font-editorial text-[52px] font-normal tracking-[-0.5px] leading-[1.15] text-mistral-ink dark:text-mistral-canvas mb-6">
-          How to use <span style={{ color: 'rgb(217, 119, 87)' }} className="font-editorial italic">Claude Code</span> App with Keymux
+        <h2 className="font-editorial text-[42px] md:text-[52px] font-normal tracking-[-0.5px] leading-[1.2] md:leading-[1.15] text-mistral-ink dark:text-mistral-canvas mb-6">
+          How to setup Free{' '}
+          <span className="inline-flex items-center gap-2 text-[#D97757] mx-1 -my-2 align-middle">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-9 h-9 md:w-11 md:h-11" xmlSpace="preserve" viewBox="0 0 16 16"><g fill="currentColor"><path d="m14.375 6.48.49.28v.209l-.14.489-5.937 1.397-.558-1.387zm0 0"/><path d="m12.155 2.373.683.143.182.224.173.535-.072.342-3.983 5.447L7.81 7.737l3.673-4.82z"/><path d="m8.719 1.522.419-.28.349.14.349.49-.957 5.748-.65-.441-.279-.769.49-4.33z"/><path d="m4.239 1.614.43-.55L4.95 1l.558.081.275.216 2.004 4.442.724 2.11-.848.471-3.231-5.864z"/><path d="m2.154 4.665-.14-.56.42-.488.488.07h.14l2.933 2.165.908.698 1.257.978-.698 1.187-.629-.489-.419-.419-4.05-2.863z"/><path d="M1.316 8.296 1 7.946v-.31l.316-.108 3.562.21 3.491.279-.113.695-6.66-.346z"/><path d="M3.411 11.931h-.698l-.278-.32v-.382l1.186-.838 4.82-3.068.487.833z"/><path d="m4.738 13.883-.28.07-.418-.21.07-.35 4.12-5.446.558.768-3.072 4.05z"/><path d="m8.23 14.581-.21.28-.419.14-.349-.28-.21-.42L8.09 8.646l.629.07z"/><path d="M11.791 13.045v.558l-.07.21-.279.14-.489-.066-3.356-4.996 1.331-1.014 1.117 2.025.105.733z"/><path d="m13.398 12.207.07.349-.21.279-.21-.07-1.187-.838-1.815-1.606-1.397-.978.419-1.326.698.419.42.768z"/><path d="m12.49 8.645 1.746.14.419.28.279.418v.302l-.768.327-3.911-.978-1.606-.07.419-1.466 1.117.838z"/></g></svg>
+            <span className="font-editorial italic font-medium pt-1">Claude Code</span>
+          </span>{' '}
+          with Keymux
         </h2>
         <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-mistral-cream-deeper dark:bg-mistral-ink-tint rounded-full border border-mistral-sunshine-300 dark:border-mistral-ink-tint">
           <span className="text-xs font-bold text-mistral-primary uppercase tracking-wide">100% Free / BYO-Key</span>
@@ -105,7 +110,7 @@ export function InstallationSection() {
           By default, the Claude Code app asks you to log in with an Anthropic account and charges you per token. But using Keymux, you can reroute it to use Free APIs (like Google Gemini, Groq, or OpenRouter) completely transparently!
         </p>
         <p className="text-lg text-mistral-slate dark:text-mistral-muted leading-[1.50] mb-12">
-          This also works flawlessly as a drop-in proxy for the <motion.span whileInView={{ opacity: 1 }} viewport={{ once: false, amount: 0.1 }} className="inline-block"><ShinyText speed={5} repeatDelay={4} baseColor="#94a3b8" shineColor="#fa520f" className="inline font-medium">Claude Code CLI, Claude Desktop, and Claude Code extension</ShinyText></motion.span>, along with popular code editor extensions like <strong className="font-medium text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
+          This also works flawlessly as a drop-in proxy for the <motion.span whileInView={{ opacity: 1 }} viewport={{ once: false, amount: 0.1 }} className="inline-block"><ShinyText speed={5} repeatDelay={4} baseColor="#94a3b8" shineColor="#fa520f" className="inline font-bold">Claude Code CLI, Claude Desktop, and Claude Code extension</ShinyText></motion.span>, along with popular code editor extensions like <strong className="font-bold text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
         </p>
       </motion.div>
 
@@ -138,39 +143,19 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 1: Create API Keys */}
+        {/* Step 1: Quick Install */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 1: Get Your Free API Keys
-            </h3>
+            <h2 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas">
+              Step 1: Install & Build
+            </h2>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Keymux supports the following free AI providers. Go ahead and generate an API key for your preferred service:
-          </p>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-            {['Nvidia (nim.nvidia.com)', 'Groq (console.groq.com)', 'OpenRouter (openrouter.ai)', 'Google AI (aistudio.google.com)', 'Mistral (console.mistral.ai)'].map(provider => (
-              <li key={provider} className="flex items-center gap-3 text-sm text-mistral-slate dark:text-mistral-muted bg-mistral-cream-soft dark:bg-[#121214] px-4 py-2.5 rounded-lg border border-mistral-hairline dark:border-mistral-ink-tint/50">
-                <div className="w-1.5 h-1.5 rounded-full bg-mistral-primary shrink-0 shadow-[0_0_8px_rgba(250,82,15,0.6)]"></div>
-                <span className="truncate font-medium">{provider}</span>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-
-        {/* Step 2: Download & Build */}
-        <motion.div variants={itemVariants}>
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 2: Download &amp; Build
-            </h3>
-          </div>
-          <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Since the project is built in TypeScript, we need to clone and build it first.
+            Clone the repository, install dependencies, build it, and link it globally so you can use the <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">keymux</code> command anywhere.
           </p>
           <CodeSnippet 
             label="bash"
-            rawText={"git clone https://github.com/Mayank332k/keymux.git\ncd keymux\nnpm install\nnpm run build"}
+            rawText={"git clone https://github.com/Mayank332k/keymux.git\ncd keymux\nnpm install && npm run build\nnpm link"}
             code={
               <div className="flex flex-col gap-1.5">
                 <div>
@@ -187,50 +172,30 @@ export function InstallationSection() {
                 <div>
                   <span className="text-mistral-muted select-none font-medium">$ </span>
                   <span className="text-mistral-sunshine-500 font-semibold">npm</span>{' '}
-                  <span className="text-mistral-canvas">install</span>
+                  <span className="text-mistral-canvas">install</span>{' '}
+                  <span className="text-mistral-muted">&&</span>{' '}
+                  <span className="text-mistral-sunshine-500 font-semibold">npm</span>{' '}
+                  <span className="text-mistral-canvas">run build</span>
                 </div>
                 <div>
                   <span className="text-mistral-muted select-none font-medium">$ </span>
                   <span className="text-mistral-sunshine-500 font-semibold">npm</span>{' '}
-                  <span className="text-mistral-canvas">run</span>{' '}
-                  <span className="text-mistral-canvas">build</span>
+                  <span className="text-mistral-canvas">link</span>
                 </div>
               </div>
             }
           />
         </motion.div>
 
-        {/* Step 3: Make it Global */}
-        <motion.div variants={itemVariants}>
-          <div className="flex items-baseline justify-between mb-2">
-            <h3 className="text-base font-semibold text-mistral-canvas flex items-center gap-2">
-              Step 3: Make it Global 
-            </h3>
-          </div>
-          <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            To avoid running <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">node dist/cli.js</code> every time, let's make it global so you can type <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">keymux</code> from anywhere in your system.
-          </p>
-          <CodeSnippet 
-            rawText="npm link"
-            code={
-              <>
-                <span className="text-mistral-muted select-none font-medium">$ </span>
-                <span className="text-mistral-sunshine-500 font-semibold">npm</span>{' '}
-                <span className="text-mistral-canvas">link</span>
-              </>
-            }
-          />
-        </motion.div>
-
-        {/* Step 4: Add API Keys */}
+        {/* Step 2: Dashboard & Settings */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 4: Add API Keys via Dashboard
-            </h3>
+            <h2 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas">
+              Step 2: Dashboard & Settings
+            </h2>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Open the sleek CLI Dashboard to safely input your free API keys (Gemini, Groq, OpenRouter). Keymux automatically saves them to <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-[#121214] border border-mistral-hairline dark:border-mistral-ink-tint/50 px-1.5 py-0.5 rounded">~/.keymux/config.json</code>.
+            Launch the interactive dashboard to add your free API keys (Gemini, Groq, OpenRouter). Keys are safely stored locally.
           </p>
           <CodeSnippet 
             rawText="keymux -d"
@@ -244,74 +209,51 @@ export function InstallationSection() {
           />
         </motion.div>
 
-        {/* Step 5: Start Proxy */}
+        {/* Step 3: Manage the Proxy */}
+        <motion.div variants={itemVariants}>
+          <div className="flex items-baseline justify-between mb-3">
+            <h2 className="text-xl font-bold text-mistral-ink dark:text-mistral-canvas">
+              Step 3: Start / Stop the Proxy
+            </h2>
+          </div>
+          <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
+            Use these commands to easily control the background proxy server.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CodeSnippet 
+              label="Start Proxy"
+              rawText="keymux start"
+              code={
+                <>
+                  <span className="text-mistral-muted select-none font-medium">$ </span>
+                  <span className="text-mistral-sunshine-500 font-semibold">keymux</span>{' '}
+                  <span className="text-mistral-canvas">start</span>
+                </>
+              }
+            />
+            <CodeSnippet 
+              label="Stop Proxy"
+              rawText="keymux stop"
+              code={
+                <>
+                  <span className="text-mistral-muted select-none font-medium">$ </span>
+                  <span className="text-mistral-sunshine-500 font-semibold">keymux</span>{' '}
+                  <span className="text-mistral-canvas">stop</span>
+                </>
+              }
+            />
+          </div>
+        </motion.div>
+
+        {/* Step 4: Attach Claude Code */}
         <motion.div variants={itemVariants}>
           <div className="flex items-baseline justify-between mb-3">
             <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 5: Start the Proxy
+              Step 4: Attach Claude Code
             </h3>
           </div>
           <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Start the Keymux proxy server in the background (or in a separate terminal tab) to listen for incoming requests.
-          </p>
-          <CodeSnippet 
-            rawText="keymux start --port 3002"
-            code={
-              <>
-                <span className="text-mistral-muted select-none font-medium">$ </span>
-                <span className="text-mistral-sunshine-500 font-semibold">keymux</span>{' '}
-                <span className="text-mistral-canvas">start</span>{' '}
-                <span className="text-mistral-muted">--port</span>{' '}
-                <span className="text-mistral-canvas/70">3002</span>
-              </>
-            }
-          />
-        </motion.div>
-
-        {/* Step 6: Attach Claude Code */}
-        <motion.div variants={itemVariants}>
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-base font-semibold text-mistral-ink dark:text-mistral-canvas">
-              Step 6: Attach Claude Code
-            </h3>
-          </div>
-          <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Instead of hitting Anthropic's official servers, we'll inject environment variables to trick Claude Code into hitting Keymux instead. Provide a dummy key (Keymux ignores it and uses the ones you configured).
-          </p>
-          <CodeSnippet 
-            label="bash"
-            rawText={"export ANTHROPIC_API_KEY=\"sk-ant-dummy-key\"\nexport ANTHROPIC_BASE_URL=\"http://127.0.0.1:3002/v1\"\nclaude"}
-            code={
-              <div className="flex flex-col gap-1.5">
-                <div>
-                  <span className="text-mistral-muted select-none font-medium">$ </span>
-                  <span className="text-mistral-sunshine-500 font-semibold">export</span>{' '}
-                  <span className="text-mistral-canvas">ANTHROPIC_API_KEY=</span><span className="text-mistral-primary">"sk-ant-dummy-key"</span>
-                </div>
-                <div>
-                  <span className="text-mistral-muted select-none font-medium">$ </span>
-                  <span className="text-mistral-sunshine-500 font-semibold">export</span>{' '}
-                  <span className="text-mistral-canvas">ANTHROPIC_BASE_URL=</span><span className="text-mistral-primary">"http://127.0.0.1:3002/v1"</span>
-                </div>
-                <div className="pt-2">
-                  <span className="text-mistral-muted select-none font-medium">$ </span>
-                  <span className="text-mistral-sunshine-500 font-semibold">claude</span>
-                </div>
-              </div>
-            }
-          />
-        </motion.div>
-
-        {/* Step 7: Permanent Setup */}
-        <motion.div variants={itemVariants} className="pt-10 border-t border-mistral-hairline-soft dark:border-mistral-ink-tint">
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-base font-semibold text-mistral-canvas flex items-center gap-2">
-              Permanent Setup 
-              <span className="px-2 py-0.5 rounded-sm bg-mistral-cream-deeper dark:bg-mistral-ink-tint text-mistral-primary text-[10px] font-bold uppercase tracking-wide">Recommended</span>
-            </h3>
-          </div>
-          <p className="text-sm text-mistral-slate dark:text-mistral-muted mb-4">
-            Don't want to type those export commands every time? Open your shell configuration file (<code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">~/.bashrc</code> or <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">~/.zshrc</code>) and add this magical alias. Now you can just type <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">free-claude</code> to launch it.
+            Now tell Claude Code to hit your Keymux proxy instead of Anthropic's paid API. Add this magical alias to your <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">~/.zshrc</code> or <code className="font-mono text-[11px] bg-mistral-hairline-soft dark:bg-mistral-surface-code px-1.5 py-0.5 rounded">~/.bashrc</code> and you're set!
           </p>
           <CodeSnippet 
             label="~/.zshrc"
