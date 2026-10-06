@@ -199,7 +199,7 @@ function App() {
       <header ref={headerRef} className="sticky top-0 z-50 bg-transparent border-b border-transparent transition-all">
         <div className="max-w-[1280px] mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <a className="flex items-center group" href="#">
+            <a className="flex items-center group" href="#overview">
               <div className="h-7 flex items-center pt-1 overflow-visible">
                 <TextParticleAnimation 
                   text="keymux" 
@@ -220,7 +220,7 @@ function App() {
               <a 
                 key={item}
                 className="relative group hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm py-1" 
-                href={item === 'Home' ? '#' : `#${item.toLowerCase()}`}
+                href={item === 'Home' ? '#overview' : `#${item.toLowerCase()}`}
               >
                 {item}
                 <span className="absolute left-0 bottom-0 w-0 h-[1.5px] bg-mistral-primary transition-all duration-300 ease-out group-hover:w-full"></span>
@@ -301,7 +301,7 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             className="lg:hidden absolute top-16 inset-x-0 h-[calc(100vh-64px)] bg-white dark:bg-[#121212] px-5 md:px-8 py-10 flex flex-col gap-6 md:p-8 overflow-y-auto z-[999]"
           >
-            <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
+            <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#overview" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#installation" onClick={() => setIsMobileMenuOpen(false)}>Installation</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#leo-agent" onClick={() => setIsMobileMenuOpen(false)}>Leo Agent</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
@@ -550,7 +550,7 @@ function App() {
             
             <div className="flex flex-col gap-3">
               <span className="font-semibold text-sm mb-2 text-mistral-ink dark:text-mistral-canvas">Explore</span>
-              <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#">Home</a>
+              <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#overview">Home</a>
               <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#installation">Installation</a>
               <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#leo-agent">Leo Agent</a>
               <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#about">About</a>
