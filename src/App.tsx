@@ -13,6 +13,7 @@ import {
 } from 'hugeicons-react';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { InstallationSection } from './components/InstallationSection';
+import { LeoAgentSection } from './components/LeoAgentSection';
 import { TableOfContents } from './components/TableOfContents';
 import { ScrollReveal } from "@/components/lightswind/scroll-reveal";
 import { TextParticleAnimation } from "@/components/lightswind/text-particle-animation";
@@ -215,7 +216,7 @@ function App() {
           </div>
 
           <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-8 md:p-8 text-sm font-medium text-mistral-slate dark:text-mistral-muted">
-            {['Home', 'Installation', 'About', 'Contact'].map((item) => (
+            {['Home', 'Installation', 'Leo Agent', 'About', 'Contact'].map((item) => (
               <a 
                 key={item}
                 className="relative group hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#121212] rounded-sm py-1" 
@@ -302,6 +303,7 @@ function App() {
           >
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#" onClick={() => setIsMobileMenuOpen(false)}>Home</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#installation" onClick={() => setIsMobileMenuOpen(false)}>Installation</a>
+            <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#leo-agent" onClick={() => setIsMobileMenuOpen(false)}>Leo Agent</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#about" onClick={() => setIsMobileMenuOpen(false)}>About</a>
             <a className="text-mistral-ink dark:text-mistral-canvas font-semibold text-3xl tracking-tight" href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
             <div className="flex flex-col gap-4 mt-8 pt-8 border-t border-mistral-hairline-soft dark:border-mistral-ink-tint">
@@ -401,6 +403,7 @@ function App() {
       </section>
 
       <InstallationSection />
+      <LeoAgentSection />
 
         {/* BEGIN: About Keymux Section */}
         <section className="py-16 md:py-24 bg-mistral-cream dark:bg-[#1a1a1c] border-b border-mistral-hairline-soft dark:border-mistral-ink-tint" id="about">
@@ -549,6 +552,7 @@ function App() {
               <span className="font-semibold text-sm mb-2 text-mistral-ink dark:text-mistral-canvas">Explore</span>
               <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#">Home</a>
               <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#installation">Installation</a>
+              <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#leo-agent">Leo Agent</a>
               <a className="text-sm text-mistral-slate dark:text-mistral-muted hover:text-mistral-primary dark:hover:text-mistral-primary transition-colors" href="#about">About</a>
             </div>
 
