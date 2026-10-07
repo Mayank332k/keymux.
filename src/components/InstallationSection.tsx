@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { Tick01Icon, Copy01Icon } from 'hugeicons-react';
-import { ShinyText } from "@/components/lightswind/shiny-text";
 import { motion } from 'framer-motion';
 
 interface CodeBlockProps {
@@ -110,7 +109,7 @@ export function InstallationSection() {
           By default, the Claude Code app asks you to log in with an Anthropic account and charges you per token. But using Keymux, you can reroute it to use Free APIs (like Google Gemini, Groq, or OpenRouter) completely transparently!
         </p>
         <p className="text-lg text-mistral-slate dark:text-mistral-muted leading-[1.50] mb-12">
-          This also works flawlessly as a drop-in proxy for the <motion.span whileInView={{ opacity: 1 }} viewport={{ once: false, amount: 0.1 }} className="inline-block"><ShinyText speed={5} repeatDelay={4} baseColor="#94a3b8" shineColor="#fa520f" className="inline font-bold">Claude Code CLI, Claude Desktop, and Claude Code extension</ShinyText></motion.span>, along with popular code editor extensions like <strong className="font-bold text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
+          This also works flawlessly as a drop-in proxy for the <span className="font-bold text-mistral-primary">Claude Code CLI, Claude Desktop, and Claude Code extension</span>, along with popular code editor extensions like <strong className="font-bold text-mistral-ink dark:text-mistral-canvas">Cline, Roo, and Continue</strong>.
         </p>
       </motion.div>
 

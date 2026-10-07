@@ -56,6 +56,5 @@ export default {
       }
     }
   },
-  plugins: [
-    require('lightswind/plugin')({ effect3d: false }),],
+  plugins: [],
 }

@@ -1,6 +1,10 @@
-import { Copy01Icon, Tick01Icon, ArrowRight01Icon } from 'hugeicons-react';
-import { ScrollReveal } from '@/components/lightswind/scroll-reveal';
-import { useState, useRef } from 'react';
+import { 
+  CodeBlock, 
+  KeyCap, 
+  EvidenceLink, 
+  Divider, 
+  SectionHeader 
+} from './CodeBlock';
 
 const providers = [
   { name: 'Nvidia NIM', model: 'Nemotron 3 Ultra 550B', endpoint: 'integrate.api.nvidia.com' },
@@ -41,94 +45,6 @@ const security = [
   { file: 'keymux-usage.json', path: '~/.pi/agent/keymux-usage.json', content: 'Token I/O, cache stats, request counts, 14-day velocity, provider breakdown' },
   { file: 'sessions/', path: '~/.pi/agent/sessions/', content: 'JSONL session files — messages, branches, compaction history, tool calls' },
 ];
-
-function CodeBlock({ children, filename }: { children: React.ReactNode; filename?: string }) {
-  const [copied, setCopied] = useState(false);
-  const codeRef = useRef<HTMLElement>(null);
-  
-  const handleCopy = async () => {
-    if (!codeRef.current) return;
-    try {
-      await navigator.clipboard.writeText(codeRef.current.textContent || '');
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch (err) {
-      console.warn('Copy failed:', err);
-    }
-  };
-
-  return (
-    <div className="relative group">
-      {filename && (
-        <div className="px-4 py-2.5 bg-[#121214] border-b border-mistral-hairline-strong dark:border-mistral-ink-tint/50 flex items-center justify-between text-[11px] font-mono text-mistral-muted">
-          <span>{filename}</span>
-          <button
-            onClick={handleCopy}
-            className="px-3 py-1 text-[10px] font-mono rounded border transition-all opacity-60 hover:opacity-100 hover:bg-mistral-hairline-soft dark:hover:bg-mistral-ink-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mistral-primary"
-            aria-label="Copy to clipboard"
-          >
-            {copied ? (
-              <> <Tick01Icon size={12} className="text-emerald-500" /> Copied</>
-            ) : (
-              <> <Copy01Icon size={12} /> Copy </>
-            )}
-          </button>
-        </div>
-      )}
-      <pre className="bg-[#0a0a0b] p-4 md:p-5 overflow-x-auto font-mono text-[13px] md:text-[14px] leading-[1.7] text-mistral-canvas/95 tab-size-2">
-        <code ref={codeRef} className="select-all block">{children}</code>
-      </pre>
-    </div>
-  );
-}
-
-function KeyCap({ children }: { children: React.ReactNode }) {
-  return (
-    <kbd className="font-mono text-[11px] px-2.5 py-1.5 rounded bg-[#121214] border border-mistral-hairline-strong dark:border-mistral-ink-tint/50 text-mistral-sunshine-500 font-medium whitespace-nowrap shrink-0">
-      {children}
-    </kbd>
-  );
-}
-
-function EvidenceLink({ children, href }: { children: React.ReactNode; href: string }) {
-  const [copied, setCopied] = useState(false);
-  
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    try {
-      await navigator.clipboard.writeText(href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch (err) {
-      console.warn('Copy failed:', err);
-    }
-  };
-
-  return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-[12px] text-mistral-primary/80 hover:text-mistral-primary dark:text-mistral-primary-light dark:hover:text-mistral-primary-light cursor-pointer transition-colors group" onClick={handleCopy}>
-      <span className="opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight01Icon size={12} /></span>
-      <span className="underline underline-offset-2 decoration-dotted hover:decoration-solid">{children}</span>
-      {copied && <Tick01Icon size={10} className="text-emerald-500" />}
-    </span>
-  );
-}
-
-function Divider() {
-  return <hr className="border-mistral-hairline-soft dark:border-mistral-ink-tint/50 my-12" />;
-}
-
-function SectionHeader({ label, title }: { label: string; title: React.ReactNode }) {
-  return (
-    <div className="mb-12 md:mb-14">
-      <p className="font-mono text-xs font-semibold text-mistral-steel uppercase tracking-widest mb-3">
-        {label}
-      </p>
-      <h3 className="font-editorial text-[36px] md:text-[44px] lg:text-[48px] font-normal tracking-[-0.5px] leading-[1.1] text-mistral-ink dark:text-mistral-canvas">
-        {title}
-      </h3>
-    </div>
-  );
-}
 
 function ArchitectureRow({ label, description, badge, badgeColor, iconColor }: {
   label: string;
@@ -230,7 +146,7 @@ export function LeoAgentSection() {
 
       {/* Core Capabilities */}
       <div className="mb-16 md:mb-20 lg:mb-24">
-        <SectionHeader label="Core Capabilities" title={<>Technical <ScrollReveal staggerDelay={0.1} duration={0.8} blurStrength={8}>specifications</ScrollReveal></>} />
+        <SectionHeader label="Core Capabilities" title={<>Technical <span className="text-mistral-primary">specifications</span></>} />
         
         <dl className="space-y-6 md:space-y-8">
           {features.map((f) => (
@@ -253,7 +169,7 @@ export function LeoAgentSection() {
 
       {/* Keyboard Shortcuts */}
       <div className="mb-16 md:mb-20 lg:mb-24">
-        <SectionHeader label="Keyboard Shortcuts" title={<>Default <ScrollReveal staggerDelay={0.1} duration={0.8} blurStrength={8}>keybindings</ScrollReveal></>} />
+        <SectionHeader label="Keyboard Shortcuts" title={<>Default <span className="text-mistral-primary">keybindings</span></>} />
         
         <div className="overflow-x-auto rounded-xl border border-mistral-hairline-strong dark:border-mistral-ink-tint/50 bg-[#0a0a0b]">
           <table className="w-full min-w-[500px] text-left font-mono text-[13px]">
@@ -281,7 +197,7 @@ export function LeoAgentSection() {
 
       {/* Usage Modes */}
       <div className="mb-16 md:mb-20 lg:mb-24">
-        <SectionHeader label="Usage Modes" title={<>Three <ScrollReveal staggerDelay={0.1} duration={0.8} blurStrength={8}>execution modes</ScrollReveal></>} />
+        <SectionHeader label="Usage Modes" title={<>Three <span className="text-mistral-primary">execution modes</span></>} />
         
         <div className="overflow-x-auto rounded-xl border border-mistral-hairline-strong dark:border-mistral-ink-tint/50 bg-[#0a0a0b]">
           <table className="w-full min-w-[650px] text-left font-mono text-[13px]">
@@ -313,7 +229,7 @@ export function LeoAgentSection() {
 
       {/* Security */}
       <div className="mb-16 md:mb-20 lg:mb-24">
-        <SectionHeader label="Security Model" title={<>Zero hardcoded keys — <ScrollReveal staggerDelay={0.1} duration={0.8} blurStrength={8}>secure by design</ScrollReveal></>} />
+        <SectionHeader label="Security Model" title={<>Zero hardcoded keys — <span className="text-mistral-primary">secure by design</span></>} />
         
         <div className="space-y-3 md:space-y-4 font-mono text-[13px] md:text-[14px]">
           {security.map((s) => (
@@ -339,7 +255,7 @@ export function LeoAgentSection() {
 
       {/* Install */}
       <div>
-        <SectionHeader label="Installation" title={<>Get <ScrollReveal staggerDelay={0.1} duration={0.8} blurStrength={8}>running</ScrollReveal></>} />
+        <SectionHeader label="Installation" title={<>Get <span className="text-mistral-primary">running</span></>} />
         
         <div className="space-y-5 max-w-3xl">
           <CodeBlock filename="Clone & build">
